@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="css/changePass.css">
+</head>
+
+<body>
+
+    <div class="form-container">
+        <h2>Change Password</h2>
+        <form id="changePasswordForm" method="post" action="/upadetPass">
+            <label for="currentPassword">Current Password:</label><br>
+            <input type="password" id="currentPassword" name="curr_Pass" required><br>
+
+            <label for="newPassword">New Password:</label><br>
+            <input type="password" id="newPassword" name="new_Pass" required><br>
+
+            <label for="confirmPassword">Confirm New Password:</label><br>
+            <input type="password" id="confirmPassword" name="conf_Pass" required><br>
+
+            <span class="error" id="error"></span><br>
+
+            <input type="submit" value="Change Password">
+        </form>
+    </div>
+
+</body>
+
+</html>
