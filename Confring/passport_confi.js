@@ -7,7 +7,7 @@ passportConfring.use(new LocalStrategy({ usernameField: "email" },
   async (email, password, done) => {
     console.log("passport", email, password);
 
-    // Use email instead of username to find the user
+  
     let user = await authModule.findOne({ email: email });
     console.log("user", user);
 

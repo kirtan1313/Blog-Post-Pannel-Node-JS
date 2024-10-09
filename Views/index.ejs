@@ -44,7 +44,11 @@
                     </li>
                     <li class="nav-item"></li>
                     <a class="nav-link text-white" href="/changepass">Change Password</a>
-                </li>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="/addTopic">AddTopic</a>
+                    </li>
+
                     <li class="nav-item">
                         <a class="nav-link text-white" href="/logout">Logout</a>
                     </li>
@@ -59,30 +63,32 @@
                     </h2>
                     <div class="allBlogs">
                         <div class="row">
-                            <% allBlogs.forEach(blog => { %> 
+                            <% allBlogs.forEach(blog=> { %>
                                 <div class="col-md-4 mb-4">
                                     <div class="card h-100 shadow-lg">
                                         <img src="<%= blog.path %>" class="card-img-top" alt="<%= blog.path %>">
                                         <div class="card-body">
-                                            <h5 class="card-title"><%= blog.title %></h5>
+                                            <h5 class="card-title">
+                                                <%= blog.title %>
+                                            </h5>
                                             <p class="card-text">
-                                                <%= blog.content.substring(0, 100) %>... 
+                                                <%= blog.content.substring(0, 100) %>...
                                             </p>
                                             <a href="#" class="btn btn-primary">Read More</a>
                                         </div>
                                         <div class="card-footer text-muted">
-                                            Posted by 
-                                            <% let blogger = bloggers.find(b => b.email === blog.userEmail); %>
-                                            <%= blogger ? blogger.name : 'Unknown' %>
+                                            Posted by
+                                            <% let blogger=bloggers.find(b=> b.email === blog.userEmail); %>
+                                                <%= blogger ? blogger.name : 'Unknown' %>
                                         </div>
                                     </div>
                                 </div>
-                            <% }) %>
+                                <% }) %>
                         </div>
                     </div>
                 </div>
-                
-                
+
+
             </main>
         </div>
     </div>

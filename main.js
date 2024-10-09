@@ -29,6 +29,13 @@ app.use(bodyParser.json())
 app.use(cookie_parser())
 app.use('/',Router)
 
+
+app.post('/delete-topic', (req, res) => {
+    const { index } = req.body;
+    topics.splice(index, 1);  // Remove the topic at the given index
+    res.redirect('/');
+});
+
 app.listen(PORT , (err)=>{
     if(!err){
         console.log(`Server is running on port http://localhost:${PORT}`)

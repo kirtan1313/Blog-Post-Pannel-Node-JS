@@ -1,7 +1,8 @@
 const blog_Models = require('../Modules/BlogModels')
 const username = require('../Modules/Authontication');
 const { render } = require('ejs');
-const fs = require('fs')
+const fs = require('fs');
+const addTopicModel = require('../Modules/addTopicModels');
 
 const addBlogFormController = (req, res) => {
     res.render('addBlogForm');
@@ -87,6 +88,53 @@ const deleteBlogController = async (req, res) => {
 
 }
 
+const add_topic = async (req, res) => {
+    try {
+        const topics = await addTopicModel.find(); // Fetch topics from MongoDB
+        res.render('addTopic', { topics }); // Pass the topics to the view
+    } catch (err) {
+        console.log(err);
+        res.status(500).send('Error retrieving topics');
+    }
+}
+
+const addTopic = async (req, res) => {
+    const { topic } = req.body;
+    if (topic) {
+        try {
+            const newTopic = new addTopicModel({ topic }); // Create a new topic document
+            console.log('newtopic',newTopic);
+            
+            await newTopic.save(); // Save to MongoDB
+            res.redirect('/addTopic'); // Redirect to the same page
+        } catch (err) {
+            console.log(err);
+            res.status(500).send('Error adding topic');
+        }
+    } else {
+        res.redirect('/addTopic'); // If no topic is provided, just redirect back
+    }
+}
+
+const deleteTopic = async (req, res) => {
+    const { index } = req.body;
+    try {
+        const topics = await addTopicModel.find(); // Fetch current topics
+        const topicToDelete = topics[index]; // Find the topic based on index
+        if (topicToDelete) {
+            await addTopicModel.findByIdAndDelete(topicToDelete._id); // Delete topic by id
+            res.redirect('/addTopic'); // Redirect back to the list of topics
+        } else {
+            res.status(404).send('Topic not found');
+        }
+    } catch (err) {
+        console.log(err);
+        res.status(500).send('Error deleting topic');
+    }
+};
+
+
+
 module.exports = {
     addBlogFormController,
     createBlogController,
@@ -94,5 +142,8 @@ module.exports = {
     myBlogerController,
     editBlogController,
     updateBlogController,
-    deleteBlogController
+    deleteBlogController,
+    add_topic,
+    addTopic,
+    deleteTopic
 };

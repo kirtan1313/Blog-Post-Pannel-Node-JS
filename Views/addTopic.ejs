@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Topic List</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1, h2 {
+            color: #333;
+        }
+
+        form {
+            margin-bottom: 20px;
+        }
+
+        input[type="text"] {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 250px;
+        }
+
+        button {
+            padding: 10px 15px;
+            font-size: 16px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f8f9fa;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        td form {
+            display: inline;
+        }
+
+        td button {
+            background-color: #dc3545;
+        }
+
+        td button:hover {
+            background-color: #c82333;
+        }
+    </style>
+</head>
+<body>
+    <h1>Add a Topic</h1>
+
+    <form action="/add-topic" method="POST">
+        <input type="text" name="topic" placeholder="Enter a topic" required>
+        <button type="submit">Add Topic</button>
+    </form>
+
+    <h2>Topics</h2>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Topic</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% if (topics.length > 0) { %>
+                <% topics.forEach((topic, index) => { %>
+                    <tr>
+                        <td><%= topic.topic %></td>
+                        <td>
+                            <form action="/delete-topic" method="POST" style="display:inline;">
+                                <input type="hidden" name="index" value="<%= index %>">
+                                <button type="submit">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                <% }); %>
+            <% } else { %>
+                <tr>
+                    <td colspan="2">No topics added yet</td>
+                </tr>
+            <% } %>
+        </tbody>
+    </table>
+</body>
+</html>

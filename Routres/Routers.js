@@ -29,5 +29,17 @@ router.get('/logout' ,loginController.userLogoutController)
 router.get('/changepass',isAuth,loginController.changePassword)
 router.post('/upadetPass',loginController.updatePassword)
 
+router.get('/forgrtPass',loginController.forgetPassword)
+router.post('/reset-password',loginController.checkEmailAuth);
+
+router.get('/otpValidation/:id',loginController.otpValidation)
+router.post('/verify-otp/:id',loginController.verify_otp)
+
+router.post('/resetPassword/:id',loginController.resetPassword)
+
+router.get('/addTopic', isAuth, BlogController.add_topic);  
+router.post('/add-topic', isAuth, BlogController.addTopic);
+
+router.post('/delete-topic', BlogController.deleteTopic);
 
 module.exports = router;
