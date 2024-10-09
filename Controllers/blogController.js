@@ -88,22 +88,69 @@ const deleteBlogController = async (req, res) => {
 
 }
 
+// const add_topic = async (req, res) => {
+//     try {
+//         const topics = await addTopicModel.find(); // Fetch topics from MongoDB
+//         res.render('addTopic', { topics }); // Pass the topics to the view
+//     } catch (err) {
+//         console.log(err);
+//         res.status(500).send('Error retrieving topics');
+//     }
+// };
+
 const add_topic = async (req, res) => {
     try {
         const topics = await addTopicModel.find(); // Fetch topics from MongoDB
-        res.render('addTopic', { topics }); // Pass the topics to the view
+        const user = req.user; // Get the current user from the request
+        res.render('addTopic', { topics, user }); // Pass the topics and user to the view
     } catch (err) {
         console.log(err);
         res.status(500).send('Error retrieving topics');
     }
 }
 
+
+
+
+// const addTopic = async (req, res) => {
+//     const { topic } = req.body;
+
+//     // Ensure that the user is authenticated and userId is available
+//     const userId = req.user ? req.user._id : null; // Get user ID from the authenticated user
+
+//     if (topic && userId) {
+//         try {
+//             const newTopic = new addTopicModel({
+//                 topic,
+//                 userId // Include userId when creating the topic
+//             });
+//             console.log('newtopic', newTopic);
+            
+//             await newTopic.save(); // Save to MongoDB
+//             res.redirect('/addTopic'); // Redirect to the same page
+//         } catch (err) {
+//             console.log(err);
+//             res.status(500).send('Error adding topic');
+//         }
+//     } else {
+//         res.redirect('/addTopic'); // If no topic or userId is provided, just redirect back
+//     }
+// };
+
+
 const addTopic = async (req, res) => {
     const { topic } = req.body;
-    if (topic) {
+
+    // Get user ID from the authenticated user
+    const userId = req.user ? req.user._id : null;
+
+    if (topic && userId) {
         try {
-            const newTopic = new addTopicModel({ topic }); // Create a new topic document
-            console.log('newtopic',newTopic);
+            const newTopic = new addTopicModel({
+                topic,
+                userId // Include userId to associate topic with user
+            });
+            console.log('newtopic', newTopic);
             
             await newTopic.save(); // Save to MongoDB
             res.redirect('/addTopic'); // Redirect to the same page
@@ -112,27 +159,58 @@ const addTopic = async (req, res) => {
             res.status(500).send('Error adding topic');
         }
     } else {
-        res.redirect('/addTopic'); // If no topic is provided, just redirect back
+        res.redirect('/addTopic'); // If no topic or userId is provided, just redirect back
     }
-}
+};
+
+
+
+
+
+// const deleteTopic = async (req, res) => {
+//     const { index } = req.body;
+//     try {
+//         const topics = await addTopicModel.find(); // Fetch current topics
+//         const topicToDelete = topics[index]; // Find the topic based on index
+//         if (topicToDelete) {
+//             await addTopicModel.findByIdAndDelete(topicToDelete._id); // Delete topic by id
+//             res.redirect('/addTopic'); // Redirect back to the list of topics
+//         } else {
+//             res.status(404).send('Topic not found');
+//         }
+//     } catch (err) {
+//         console.log(err);
+//         res.status(500).send('Error deleting topic');
+//     }
+// };
+
+
 
 const deleteTopic = async (req, res) => {
-    const { index } = req.body;
+    const { topicId } = req.body; // Get topic ID from the request body
+
     try {
-        const topics = await addTopicModel.find(); // Fetch current topics
-        const topicToDelete = topics[index]; // Find the topic based on index
+        // Find the topic to delete by ID
+        const topicToDelete = await addTopicModel.findById(topicId);
+
         if (topicToDelete) {
-            await addTopicModel.findByIdAndDelete(topicToDelete._id); // Delete topic by id
-            res.redirect('/addTopic'); // Redirect back to the list of topics
+            // Check if the current user is the owner of the topic
+            const userId = req.user ? req.user._id : null; // Get user ID from the authenticated user
+
+            if (topicToDelete.userId.toString() === userId.toString()) {
+                await addTopicModel.findByIdAndDelete(topicId); // Delete topic by ID
+                res.redirect('/addTopic'); // Redirect back to the list of topics
+            } else {
+                res.status(403).send('You are not authorized to delete this topic'); // Not authorized
+            }
         } else {
-            res.status(404).send('Topic not found');
+            res.status(404).send('Topic not found'); // Topic not found
         }
     } catch (err) {
         console.log(err);
         res.status(500).send('Error deleting topic');
     }
 };
-
 
 
 module.exports = {

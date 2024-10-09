@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,7 +14,8 @@
             padding: 20px;
         }
 
-        h1, h2 {
+        h1,
+        h2 {
             color: #333;
         }
 
@@ -49,11 +51,14 @@
             background-color: white;
         }
 
-        table, th, td {
+        table,
+        th,
+        td {
             border: 1px solid #ddd;
         }
 
-        th, td {
+        th,
+        td {
             padding: 12px;
             text-align: left;
         }
@@ -82,7 +87,12 @@
             background-color: #c82333;
         }
     </style>
+
+
+
+
 </head>
+
 <body>
     <h1>Add a Topic</h1>
 
@@ -99,16 +109,43 @@
                 <th>Action</th>
             </tr>
         </thead>
+        <!-- <tbody>
+            <% if (topics.length> 0) { %>
+                <% topics.forEach((topic, index)=> { %>
+                    <tr>
+                        <td>
+                            <%= topic.topic %>
+                        </td>
+                        <td>
+                            <form action="/delete-topic" method="POST" style="display:inline;">
+                                <input type="hidden" name="index" value="<%= index %>">
+                                <button type="submit">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    <% }); %>
+                        <% } else { %>
+                            <tr>
+                                <td colspan="2">No topics added yet</td>
+                            </tr>
+                            <% } %>
+        </tbody> -->
+
         <tbody>
             <% if (topics.length > 0) { %>
                 <% topics.forEach((topic, index) => { %>
                     <tr>
                         <td><%= topic.topic %></td>
                         <td>
-                            <form action="/delete-topic" method="POST" style="display:inline;">
-                                <input type="hidden" name="index" value="<%= index %>">
-                                <button type="submit">Delete</button>
-                            </form>
+                            <% if (user && topic.userId && topic.userId.toString() === user._id.toString()) { %> <!-- Check if the current user is the owner -->
+                                <form action="/delete-topic" method="POST" style="display:inline;">
+                                    <input type="hidden" name="index" value="<%= index %>">
+                                    <input type="hidden" name="topicId" value="<%= topic._id %>">
+                                    <button type="submit">Delete</button>
+                                </form>
+                            <% } else { %>
+                                <span>Not allowed to delete</span>
+                            <% } %>
                         </td>
                     </tr>
                 <% }); %>
@@ -118,6 +155,9 @@
                 </tr>
             <% } %>
         </tbody>
+        
+        
     </table>
 </body>
+
 </html>
