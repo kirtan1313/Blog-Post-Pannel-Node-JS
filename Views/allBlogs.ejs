@@ -51,8 +51,8 @@
                     <li class="nav-item">
                         <a class="nav-link text-white" href="/logout">Logout</a>
                     </li>
-                   
-                    
+
+
                 </ul>
             </nav>
 
@@ -60,7 +60,6 @@
             <main class="col-md-9 col-lg-10 offset-md-3 offset-lg-2 p-4" id="main-content">
                 <div class="container my-2">
                     <h1 class="text-center mb-4">All Blogs</h1>
-                    <!-- Blog Cards Row -->
                     <div class="bloglist">
                         <div class="row">
                             <% blogs.forEach(blog=> { %>
@@ -81,13 +80,49 @@
                                             <% let blogger=bloggers.find(b=> b.email === blog.userEmail); %>
                                                 <%= blogger ? blogger.name : 'Unknown' %>
                                         </div>
+
+                                        <!-- Display Comments -->
+                                        <div class="comments mt-3">
+                                            <h6>Comments:</h6>
+                                            <% if (blog.comments && blog.comments.length> 0) { %>
+                                                <ul class="list-group">
+                                                    <% blog.comments.forEach(comment=> { %>
+                                                        <li class="list-group-item">
+                                                            <strong>
+                                                                <%= comment.user.username %>:
+                                                            </strong>
+                                                            <%= comment.text %>
+                                                        </li>
+                                                        <% }) %>
+                                                </ul>
+                                                <% } else { %>
+                                                    <p>No comments yet. Be the first to comment!</p>
+                                                    <% } %>
+                                        </div>
+
+                                        <!-- Add Comment Form -->
+                                        <form action="/comments/<%= blog._id %>" method="POST" class="mt-2">
+                                            <div class="form-group">
+                                                <label for="comment<%= blog._id %>">Add a comment:</label>
+                                                <input name="text" id="comment<%= blog._id %>" class="form-control"
+                                                    required>
+                                            </div>
+                                            <button type="submit" class="btn btn-primary btn-sm">Submit</button>
+                                        </form>
+                                        <!-- End of Comment Form -->
                                     </div>
                                 </div>
                                 <% }) %>
                         </div>
                     </div>
+
                 </div>
             </main>
+
+            <!-- comments -->
+
+
+
         </div>
     </div>
 

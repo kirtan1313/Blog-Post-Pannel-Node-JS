@@ -109,28 +109,7 @@
                 <th>Action</th>
             </tr>
         </thead>
-        <!-- <tbody>
-            <% if (topics.length> 0) { %>
-                <% topics.forEach((topic, index)=> { %>
-                    <tr>
-                        <td>
-                            <%= topic.topic %>
-                        </td>
-                        <td>
-                            <form action="/delete-topic" method="POST" style="display:inline;">
-                                <input type="hidden" name="index" value="<%= index %>">
-                                <button type="submit">Delete</button>
-                            </form>
-                        </td>
-                    </tr>
-                    <% }); %>
-                        <% } else { %>
-                            <tr>
-                                <td colspan="2">No topics added yet</td>
-                            </tr>
-                            <% } %>
-        </tbody> -->
-
+        
         <tbody>
             <% if (topics.length > 0) { %>
                 <% topics.forEach((topic, index) => { %>

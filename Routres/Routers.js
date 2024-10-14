@@ -3,7 +3,7 @@ const router = express.Router();
 const controller = require('../Controllers/myControllers')
 const loginController = require('../Controllers/Users/loginUser')
 const registerController = require('../Controllers/Users/registrationUser')
-const BlogController = require('../Controllers/blogController')
+const BlogController = require('../Controllers/blogController');
 const upload = require('../Confring/imageUplode')
 const passport = require('../Confring/passport_confi')
 const isAuth = require('../meddlewere/midlewereAuth')
@@ -41,5 +41,9 @@ router.get('/addTopic', isAuth, BlogController.add_topic);
 router.post('/add-topic', isAuth, BlogController.addTopic);
 
 router.post('/delete-topic', BlogController.deleteTopic);
+
+
+router.post('/comments/:id', isAuth, BlogController.addComment);
+router.get('/comments/:id', BlogController.getComments);
 
 module.exports = router;

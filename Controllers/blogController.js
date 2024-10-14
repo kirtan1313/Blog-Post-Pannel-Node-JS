@@ -3,20 +3,49 @@ const username = require('../Modules/Authontication');
 const { render } = require('ejs');
 const fs = require('fs');
 const addTopicModel = require('../Modules/addTopicModels');
+const Comment = require('../Modules/Comment'); 
+const Blog = require('../Modules/BlogModels');
+const User = require('../Modules/userSchema'); // Replace with the correct path to your User model
+
+
+
+
+
+
+
 
 const addBlogFormController = (req, res) => {
     res.render('addBlogForm');
 }
 
+
 const getBlogController = async (req, res) => {
-    const blogs = await blog_Models.find({});
-    const bloggers = await username.find({});
+    try {
+        const blogs = await blog_Models.find({}).populate({
+            path: 'comments',
+            populate: {
+                path: 'user', // Assuming the field in comments is 'user'
+                model: 'User', // Make sure the model name is correct
+                select: 'username' // Select only the username field
+            }
+        });
+        const bloggers = await username.find({});
 
-    console.log("Blogs:", blogs);
-    console.log("Bloggers:", bloggers);
+        console.log("Blogs with comments:", blogs);
+        console.log("Bloggers:", bloggers);
 
-    res.render('allBlogs', { blogs: blogs, bloggers: bloggers });
-}
+        res.render('allBlogs', { blogs: blogs, bloggers: bloggers });
+    } catch (error) {
+        console.error('Error fetching blogs:', error);
+        res.status(500).json({ message: 'Error fetching blogs', error: error.message });
+    }
+};
+
+
+
+
+
+
 
 const myBlogerController = async (req, res) => {
     const bloggerEmail = req.user.email;
@@ -88,129 +117,112 @@ const deleteBlogController = async (req, res) => {
 
 }
 
-// const add_topic = async (req, res) => {
-//     try {
-//         const topics = await addTopicModel.find(); // Fetch topics from MongoDB
-//         res.render('addTopic', { topics }); // Pass the topics to the view
-//     } catch (err) {
-//         console.log(err);
-//         res.status(500).send('Error retrieving topics');
-//     }
-// };
 
 const add_topic = async (req, res) => {
     try {
-        const topics = await addTopicModel.find(); // Fetch topics from MongoDB
-        const user = req.user; // Get the current user from the request
-        res.render('addTopic', { topics, user }); // Pass the topics and user to the view
+        const topics = await addTopicModel.find(); 
+        const user = req.user; 
+        res.render('addTopic', { topics, user });
     } catch (err) {
-        console.log(err);
+        console.log(err)
         res.status(500).send('Error retrieving topics');
     }
 }
 
 
-
-
-// const addTopic = async (req, res) => {
-//     const { topic } = req.body;
-
-//     // Ensure that the user is authenticated and userId is available
-//     const userId = req.user ? req.user._id : null; // Get user ID from the authenticated user
-
-//     if (topic && userId) {
-//         try {
-//             const newTopic = new addTopicModel({
-//                 topic,
-//                 userId // Include userId when creating the topic
-//             });
-//             console.log('newtopic', newTopic);
-            
-//             await newTopic.save(); // Save to MongoDB
-//             res.redirect('/addTopic'); // Redirect to the same page
-//         } catch (err) {
-//             console.log(err);
-//             res.status(500).send('Error adding topic');
-//         }
-//     } else {
-//         res.redirect('/addTopic'); // If no topic or userId is provided, just redirect back
-//     }
-// };
-
-
 const addTopic = async (req, res) => {
     const { topic } = req.body;
 
-    // Get user ID from the authenticated user
+   
     const userId = req.user ? req.user._id : null;
 
-    if (topic && userId) {
+    if(topic && userId) {
         try {
             const newTopic = new addTopicModel({
                 topic,
-                userId // Include userId to associate topic with user
+                userId
             });
             console.log('newtopic', newTopic);
             
-            await newTopic.save(); // Save to MongoDB
-            res.redirect('/addTopic'); // Redirect to the same page
+            await newTopic.save(); 
+            res.redirect('/addTopic'); 
         } catch (err) {
             console.log(err);
             res.status(500).send('Error adding topic');
         }
-    } else {
-        res.redirect('/addTopic'); // If no topic or userId is provided, just redirect back
+    }else {
+        res.redirect('/addTopic'); 
     }
 };
 
 
-
-
-
-// const deleteTopic = async (req, res) => {
-//     const { index } = req.body;
-//     try {
-//         const topics = await addTopicModel.find(); // Fetch current topics
-//         const topicToDelete = topics[index]; // Find the topic based on index
-//         if (topicToDelete) {
-//             await addTopicModel.findByIdAndDelete(topicToDelete._id); // Delete topic by id
-//             res.redirect('/addTopic'); // Redirect back to the list of topics
-//         } else {
-//             res.status(404).send('Topic not found');
-//         }
-//     } catch (err) {
-//         console.log(err);
-//         res.status(500).send('Error deleting topic');
-//     }
-// };
-
-
-
 const deleteTopic = async (req, res) => {
-    const { topicId } = req.body; // Get topic ID from the request body
+    const { topicId } = req.body; 
 
     try {
-        // Find the topic to delete by ID
+      
         const topicToDelete = await addTopicModel.findById(topicId);
 
         if (topicToDelete) {
-            // Check if the current user is the owner of the topic
-            const userId = req.user ? req.user._id : null; // Get user ID from the authenticated user
+            
+            const userId = req.user ? req.user._id : null; 
 
             if (topicToDelete.userId.toString() === userId.toString()) {
-                await addTopicModel.findByIdAndDelete(topicId); // Delete topic by ID
-                res.redirect('/addTopic'); // Redirect back to the list of topics
+                res.redirect('/addTopic'); 
             } else {
-                res.status(403).send('You are not authorized to delete this topic'); // Not authorized
+                res.status(403).send('You are not authorized to delete this topic');
             }
         } else {
-            res.status(404).send('Topic not found'); // Topic not found
+            res.status(404).send('Topic not found'); 
         }
     } catch (err) {
         console.log(err);
         res.status(500).send('Error deleting topic');
     }
 };
+
+const addComment = async (req, res) => {
+    const { text,comments } = req.body;
+    const blogId = req.params.id;
+
+
+    if (!text) {
+        return res.status(400).json({ message: 'Comment text is required' });
+    }
+
+    try {
+        const comment = new Comment({
+            user: req.user._id,
+            blog: blogId,
+            text,
+            comments
+        });
+
+        await comment.save();
+        await Blog.findByIdAndUpdate(blogId, { $push: { comments: comment._id } });
+        res.redirect(`/allblog`);
+    } catch (error) {
+        console.error('Error adding comment:', error);
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
+
+const getComments = async (req, res) => {
+    const blogId = req.params.id;
+
+    try {
+        const comments = await Comment.find({ blog: blogId }).populate('user', 'username');
+        res.status(200).json(comments);
+    } catch (error) {
+        console.error('Error fetching comments:', error);
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
+
+
+
+
+
 
 
 module.exports = {
@@ -223,5 +235,7 @@ module.exports = {
     deleteBlogController,
     add_topic,
     addTopic,
-    deleteTopic
+    deleteTopic,
+    addComment,         
+    getComments 
 };
