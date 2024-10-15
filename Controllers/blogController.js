@@ -7,17 +7,9 @@ const Comment = require('../Modules/Comment');
 const Blog = require('../Modules/BlogModels');
 const User = require('../Modules/userSchema'); 
 
-
-
-
-
-
-
-
 const addBlogFormController = (req, res) => {
     res.render('addBlogForm');
 }
-
 
 const getBlogController = async (req, res) => {
     try {
@@ -37,10 +29,9 @@ const getBlogController = async (req, res) => {
         res.render('allBlogs', { blogs: blogs, bloggers: bloggers });
     } catch (error) {
         console.error('Error fetching blogs:', error);
-        res.status(500).json({ message: 'Error fetching blogs', error: error.message });
+        res.redirect('/error');
     }
 };
-
 
 const myBlogerController = async (req, res) => {
     const bloggerEmail = req.user.email;
@@ -50,26 +41,21 @@ const myBlogerController = async (req, res) => {
     res.render('my_blogs', { blogs: bloggersData });
 }
 
-
 const createBlogController = async (req, res) => {
     const authenticatedEmail = req.user.email;
 
     const newBlog = new blog_Models({
-
         title: req.body.title,
         content: req.body.content,
         path: req.file ? req.file.path : '',
         userEmail: authenticatedEmail
-
     })
 
     await newBlog.save()
     res.redirect('/')
 }
 
-
 const editBlogController = async (req, res) => {
-
     const blogId = req.params.id;
     const editBlog = await blog_Models.findById(blogId)
     console.log("blogId", editBlog);
@@ -77,14 +63,12 @@ const editBlogController = async (req, res) => {
     res.render('edit_blogs', { editBlog })
 }
 
-
 const updateBlogController = async (req, res) => {
     const updateid = req.params.id
     const updateBlog = await blog_Models.findById(updateid)
     if (req.file) {
         fs.unlink(updateBlog.path, (err) => {
             console.log(err);
-
         })
     }
 
@@ -96,7 +80,6 @@ const updateBlogController = async (req, res) => {
 
     const updateData = await blog_Models.findByIdAndUpdate(updateid, updateBlog, { new: true })
     res.redirect('/myBlogs');
-
 }
 
 const deleteBlogController = async (req, res) => {
@@ -109,9 +92,7 @@ const deleteBlogController = async (req, res) => {
 
     const deleteBlog = await blog_Models.findByIdAndDelete(deleteId)
     res.redirect('/myBlogs');
-
 }
-
 
 const add_topic = async (req, res) => {
     try {
@@ -120,15 +101,12 @@ const add_topic = async (req, res) => {
         res.render('addTopic', { topics, user });
     } catch (err) {
         console.log(err)
-        res.status(500).send('Error retrieving topics');
+        res.redirect('/error'); 
     }
 }
 
-
 const addTopic = async (req, res) => {
     const { topic } = req.body;
-
-   
     const userId = req.user ? req.user._id : null;
 
     if(topic && userId) {
@@ -143,46 +121,42 @@ const addTopic = async (req, res) => {
             res.redirect('/addTopic'); 
         } catch (err) {
             console.log(err);
-            res.status(500).send('Error adding topic');
+            res.redirect('/error');
         }
-    }else {
+    } else {
         res.redirect('/addTopic'); 
     }
 };
-
 
 const deleteTopic = async (req, res) => {
     const { topicId } = req.body; 
 
     try {
-      
         const topicToDelete = await addTopicModel.findById(topicId);
 
         if (topicToDelete) {
-            
             const userId = req.user ? req.user._id : null; 
 
             if (topicToDelete.userId.toString() === userId.toString()) {
                 res.redirect('/addTopic'); 
             } else {
-                res.status(403).send('You are not authorized to delete this topic');
+                res.redirect('/unauthorized'); 
             }
         } else {
-            res.status(404).send('Topic not found'); 
+            res.redirect('/notfound');
         }
     } catch (err) {
         console.log(err);
-        res.status(500).send('Error deleting topic');
+        res.redirect('/error'); 
     }
 };
 
 const addComment = async (req, res) => {
-    const { text,comments } = req.body;
+    const { text, comments } = req.body;
     const blogId = req.params.id;
 
-
     if (!text) {
-        return res.status(400).json({ message: 'Comment text is required' });
+        return res.redirect(`/allblog?error=Comment text is required`); 
     }
 
     try {
@@ -198,7 +172,7 @@ const addComment = async (req, res) => {
         res.redirect(`/allblog`);
     } catch (error) {
         console.error('Error adding comment:', error);
-        res.status(500).json({ message: 'Server error', error: error.message });
+        res.redirect('/error');
     }
 };
 
@@ -207,13 +181,12 @@ const getComments = async (req, res) => {
 
     try {
         const comments = await Comment.find({ blog: blogId }).populate('user', 'username');
-        res.status(200).json(comments);
+        res.render('comments', { comments });
     } catch (error) {
         console.error('Error fetching comments:', error);
-        res.status(500).json({ message: 'Server error', error: error.message });
+        res.redirect('/error'); 
     }
 };
-
 
 module.exports = {
     addBlogFormController,
