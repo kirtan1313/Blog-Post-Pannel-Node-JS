@@ -5,7 +5,7 @@ const fs = require('fs');
 const addTopicModel = require('../Modules/addTopicModels');
 const Comment = require('../Modules/Comment'); 
 const Blog = require('../Modules/BlogModels');
-const User = require('../Modules/userSchema'); // Replace with the correct path to your User model
+const User = require('../Modules/userSchema'); 
 
 
 
@@ -24,9 +24,9 @@ const getBlogController = async (req, res) => {
         const blogs = await blog_Models.find({}).populate({
             path: 'comments',
             populate: {
-                path: 'user', // Assuming the field in comments is 'user'
-                model: 'User', // Make sure the model name is correct
-                select: 'username' // Select only the username field
+                path: 'user', 
+                model: 'User',
+                select: 'username' 
             }
         });
         const bloggers = await username.find({});
@@ -40,11 +40,6 @@ const getBlogController = async (req, res) => {
         res.status(500).json({ message: 'Error fetching blogs', error: error.message });
     }
 };
-
-
-
-
-
 
 
 const myBlogerController = async (req, res) => {
@@ -218,11 +213,6 @@ const getComments = async (req, res) => {
         res.status(500).json({ message: 'Server error', error: error.message });
     }
 };
-
-
-
-
-
 
 
 module.exports = {
