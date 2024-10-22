@@ -7,7 +7,7 @@ const subtopicSchema = new mongoose.Schema({
     },
     topicId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Topic',  // Reference to the Topic schema
+        ref: 'Topic',  
         required: true
     }
 });
