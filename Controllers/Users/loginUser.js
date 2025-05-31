@@ -85,7 +85,6 @@ const checkEmailAuth = async (req, res) => {
 
     let mailOpt = {
       from: 'mkirtan013@gmail.com',
-      // to: userData.email,
       to : 'yash.s.p86@gmail.com',
       subject: 'Reset Password',
       text: `Your OTP is ${otp}`
